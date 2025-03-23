@@ -2035,7 +2035,9 @@ function Library:Notify(Text, Time)
     task_spawn(function()
         task_wait(5 or Time)
 
-        NotifyOuter:TweenSize(udim2_new(0, 0, 0, 20), "Out", "Quad", 0.4, true)
+        if NotifyOuter ~= nil then 
+	NotifyOuter:TweenSize(udim2_new(0, 0, 0, 20), "Out", "Quad", 0.4, true)
+	end
 
         task_wait(0.4)
 
