@@ -1250,7 +1250,7 @@ do
 
             if Library.RegistryMap[ToggleInner] then
 		Library.RegistryMap[ToggleInner].Properties.BackgroundColor3 = Toggle.Value and "AccentColor" or "MainColor"
-            	Library.RegistryMap[ToggleInner]Library.RegistryMap[ToggleInner].Properties.BorderColor3 = Toggle.Value and "AccentColorDark" or "OutlineColor"
+            	Library.RegistryMap[ToggleInner].Properties.BorderColor3 = Toggle.Value and "AccentColorDark" or "OutlineColor"
 	    end
         end
 
