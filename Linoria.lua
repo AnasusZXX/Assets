@@ -764,7 +764,9 @@ do
             ContainerLabel.Visible = true
             ContainerLabel.TextColor3 = State and Library.AccentColor or Library.FontColor
 
-            Library.RegistryMap[ContainerLabel].Properties.TextColor3 = State and "AccentColor" or "FontColor"
+            if Library.RegistryMap[ContainerLabel] then
+		Library.RegistryMap[ContainerLabel].Properties.TextColor3 = State and "AccentColor" or "FontColor"
+	    end
 
             local YSize = 0
 
