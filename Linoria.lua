@@ -12,40 +12,33 @@ local math_random = math.random
 local math_floor = math.floor
 local math_clamp = math.clamp
 local math_ceil = math.ceil
-
 local string_char = string.char
 local string_format = string.format
-
 local table_find = table.find
 local table_concat = table.concat
 local table_insert = table.insert
 local table_remove = table.remove
-
 local task_spawn = task.spawn
 local task_wait = task.wait
-
 local colorsequence_new = ColorSequence.new
 local colorsequencekeypoint_new = ColorSequenceKeypoint.new
-
 local udim_new = UDim.new
 local udim2_new = UDim2.new
 local udim2_fromoffset = UDim2.fromOffset
-
 local color3_new = Color3.new
 local color3_tohsv = Color3.toHSV
 local color3_fromrgb = Color3.fromRGB
 local color3_fromhsv = Color3.fromHSV
 local color3_fromhex = Color3.fromHex
-
 local instance_new = Instance.new
-
 local drawing_new = Drawing.new
-
 local vector2_new = Vector2.new
+
+local linoria_connections = {}
 
 local InputService = game:GetService("UserInputService")
 local TextService = game:GetService("TextService")
-local CoreGui = gethui() or cloneref(game:GetService("CoreGui"))
+local CoreGui = gethui and gethui() or cloneref(game:GetService("CoreGui"))
 local CollectionService = game:GetService("CollectionService")
 local LocalPlayer = game:GetService("Players").LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
@@ -151,7 +144,7 @@ end
 function Library:MakeDraggable(Instance, Cutoff)
     Instance.Active = true
 
-    Instance.InputBegan:Connect(function(Input)
+    local connection = Instance.InputBegan:Connect(function(Input)
         if Input.UserInputType == Enum.UserInputType.MouseButton1 then
             local ObjPos = vector2_new(
                 Mouse.X - Instance.AbsolutePosition.X,
@@ -174,10 +167,11 @@ function Library:MakeDraggable(Instance, Cutoff)
             end
         end
     end)
+    table_insert(linoria_connections, connection)
 end
 
 function Library:OnHighlight(HighlightInstance, Instance, Properties, PropertiesDefault)
-    HighlightInstance.MouseEnter:Connect(function()
+    local connection = HighlightInstance.MouseEnter:Connect(function()
         local Reg = Library.RegistryMap[Instance]
 
         for Property, ColorIdx in Properties do
@@ -188,8 +182,9 @@ function Library:OnHighlight(HighlightInstance, Instance, Properties, Properties
             end
         end
     end)
+    table_insert(linoria_connections, connection)
 
-    HighlightInstance.MouseLeave:Connect(function()
+    connection = HighlightInstance.MouseLeave:Connect(function()
         local Reg = Library.RegistryMap[Instance]
 
         for Property, ColorIdx in PropertiesDefault do
@@ -200,6 +195,7 @@ function Library:OnHighlight(HighlightInstance, Instance, Properties, Properties
             end
         end
     end)
+    table_insert(linoria_connections, connection)
 end
 
 function Library:MouseIsOverOpenedFrame()
@@ -264,11 +260,12 @@ function Library:RemoveFromRegistry(Instance)
     end
 end
 
-ScreenGui.DescendantRemoving:Connect(function(Instance)
+local connection = ScreenGui.DescendantRemoving:Connect(function(Instance)
     if Library.RegistryMap[Instance] then
         Library:RemoveFromRegistry(Instance)
     end
 end)
+table_insert(linoria_connections, connection)
 
 function Library:UpdateColorsUsingRegistry()
     for _, Object in Library.Registry do
@@ -477,7 +474,7 @@ do
             Parent = HueSelectorInner
         })
 
-        HueBox.FocusLost:Connect(function(enter)
+        connection = HueBox.FocusLost:Connect(function(enter)
             if enter then
                 local success, result = pcall(color3_fromhex, HueBox.Text)
                 if success and typeof(result) == "Color3" then
@@ -487,8 +484,9 @@ do
 
             ColorPicker:Display()
         end)
+        table_insert(linoria_connections, connection)
 
-        RgbBox.FocusLost:Connect(function(enter)
+        connection = RgbBox.FocusLost:Connect(function(enter)
             if enter then
                 local r, g, b = RgbBox.Text:match("(%d+),%s*(%d+),%s*(%d+)")
                 if r and g and b then
@@ -498,6 +496,7 @@ do
 
             ColorPicker:Display()
         end)
+        table_insert(linoria_connections, connection)
 
         function ColorPicker:Display()
             ColorPicker.Value = color3_fromhsv(ColorPicker.Hue, ColorPicker.Sat, ColorPicker.Vib)
@@ -550,7 +549,7 @@ do
             ColorPicker:Display()
         end
 
-        SatVibMap.InputBegan:Connect(function(Input)
+        connection = SatVibMap.InputBegan:Connect(function(Input)
             if Input.UserInputType == Enum.UserInputType.MouseButton1 then
                 while InputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
                     local MinX = SatVibMap.AbsolutePosition.X
@@ -571,8 +570,9 @@ do
                 Library:AttemptSave()
             end
         end)
+        table_insert(linoria_connections, connection)
 
-        HueSelectorInner.InputBegan:Connect(function(Input)
+        connection = HueSelectorInner.InputBegan:Connect(function(Input)
             if Input.UserInputType == Enum.UserInputType.MouseButton1 then
                 while InputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
                     local MinY = HueSelectorInner.AbsolutePosition.Y
@@ -588,8 +588,9 @@ do
                 Library:AttemptSave()
             end
         end)
+        table_insert(linoria_connections, connection)
 
-        DisplayFrame.InputBegan:Connect(function(Input)
+        connection = DisplayFrame.InputBegan:Connect(function(Input)
             if Input.UserInputType == Enum.UserInputType.MouseButton1 and not Library:MouseIsOverOpenedFrame() then
                 if PickerFrameOuter.Visible then
                     ColorPicker:Hide()
@@ -598,8 +599,9 @@ do
                 end
             end
         end)
+        table_insert(linoria_connections, connection)
 
-        InputService.InputBegan:Connect(function(Input)
+        connection = InputService.InputBegan:Connect(function(Input)
             if Input.UserInputType == Enum.UserInputType.MouseButton1 then
                 local AbsPos, AbsSize = PickerFrameOuter.AbsolutePosition, PickerFrameOuter.AbsoluteSize
 
@@ -610,6 +612,7 @@ do
                 end
             end
         end)
+        table_insert(linoria_connections, connection)
 
         ColorPicker:Display()
 
@@ -739,12 +742,13 @@ do
                 Library.RegistryMap[Label].Properties.TextColor3 = "FontColor"
             end
 
-            Label.InputBegan:Connect(function(Input)
+            connection = Label.InputBegan:Connect(function(Input)
                 if Input.UserInputType == Enum.UserInputType.MouseButton1 then
                     ModeButton:Select()
                     Library:AttemptSave()
                 end
             end)
+            table_insert(linoria_connections, connection)
 
             if Mode == KeyPicker.Mode then
                 ModeButton:Select()
@@ -818,7 +822,7 @@ do
 
         local Picking = false
 
-        PickOuter.InputBegan:Connect(function(Input)
+        connection = PickOuter.InputBegan:Connect(function(Input)
             if Input.UserInputType == Enum.UserInputType.MouseButton1 and not Library:MouseIsOverOpenedFrame() then
                 Picking = true
 
@@ -861,16 +865,16 @@ do
                     KeyPicker.Value = Key
 
                     Library:AttemptSave()
-
                     Event:Disconnect()
                 end)
             elseif Input.UserInputType == Enum.UserInputType.MouseButton2 and not Library:MouseIsOverOpenedFrame() then
                 ModeSelectOuter.Visible = true
             end
         end)
+        table_insert(linoria_connections, connection)
 
-        InputService.InputBegan:Connect(function(Input)
-            if (not Picking) then
+        connection = InputService.InputBegan:Connect(function(Input, Processed)
+            if (not Picking) and (not Processed) then
                 if KeyPicker.Mode == "Toggle" then
                     local Key = KeyPicker.Value
 
@@ -901,12 +905,14 @@ do
                 end
             end
         end)
+        table_insert(linoria_connections, connection)
 
-        InputService.InputEnded:Connect(function(Input)
-            if (not Picking) then
+        connection = InputService.InputEnded:Connect(function(Input, Processed)
+            if (not Picking) and (not Processed) then
                 KeyPicker:Update()
             end
         end)
+        table_insert(linoria_connections, connection)
 
         KeyPicker:Update()
 
@@ -925,6 +931,18 @@ local BaseGroupbox = {}
 
 do
     local Funcs = {}
+
+    function Funcs:Disconnect()
+        for _, connection in linoria_connections do
+            if connection["Disconnect"] then
+                connection["Disconnect"](connection)
+            end
+            if connection["Disable"] then
+                connection["Disable"](connection)
+            end
+        end
+        linoria_connections = nil
+    end
 
     function Funcs:AddBlank(Size)
         local Groupbox = self
@@ -1024,11 +1042,12 @@ do
             { BorderColor3 = "Black" }
         )
 
-        ButtonOuter.InputBegan:Connect(function(Input)
+        connection = ButtonOuter.InputBegan:Connect(function(Input)
             if Input.UserInputType == Enum.UserInputType.MouseButton1 and not Library:MouseIsOverOpenedFrame() then
                 Func()
             end
         end)
+        table_insert(linoria_connections, connection)
 
         Groupbox:AddBlank(5)
         Groupbox:Resize()
@@ -1154,10 +1173,11 @@ do
             Box.Text = Text
         end
 
-        Box:GetPropertyChangedSignal("Text"):Connect(function()
+        connection = Box:GetPropertyChangedSignal("Text"):Connect(function()
             Textbox:SetValue(Box.Text)
             Library:AttemptSave()
         end)
+        table_insert(linoria_connections, connection)
 
         Library:AddToRegistry(Box, {
             TextColor3 = "FontColor"
@@ -1268,7 +1288,7 @@ do
             end
         end
 
-        ToggleRegion.InputBegan:Connect(function(Input)
+        connection = ToggleRegion.InputBegan:Connect(function(Input)
             if Input.UserInputType == Enum.UserInputType.MouseButton1 and not Library:MouseIsOverOpenedFrame() then
                 Toggle.Value = not Toggle.Value
                 Toggle:Display()
@@ -1280,6 +1300,7 @@ do
                 Library:AttemptSave()
             end
         end)
+        table_insert(linoria_connections, connection)
 
         Toggle:Display()
         Groupbox:AddBlank(Info.BlankSize or 5 + 2)
@@ -1443,7 +1464,7 @@ do
             end
         end
 
-        SliderInner.InputBegan:Connect(function(Input)
+        connection = SliderInner.InputBegan:Connect(function(Input)
             if Input.UserInputType == Enum.UserInputType.MouseButton1 and not Library:MouseIsOverOpenedFrame() then
                 local mPos = Mouse.X
                 local gPos = Fill.Size.X.Offset
@@ -1469,6 +1490,7 @@ do
                 Library:AttemptSave()
             end
         end)
+        table_insert(linoria_connections, connection)
 
         Slider:Display()
         Groupbox:AddBlank(Info.BlankSize or 6)
@@ -1713,7 +1735,7 @@ do
                     Library.RegistryMap[ButtonLabel].Properties.TextColor3 = Selected and "AccentColor" or "FontColor"
                 end
 
-                ButtonLabel.InputBegan:Connect(function(Input)
+                connection = ButtonLabel.InputBegan:Connect(function(Input)
                     if Input.UserInputType == Enum.UserInputType.MouseButton1 then
                         local Try = not Selected
 
@@ -1752,6 +1774,7 @@ do
                         end
                     end
                 end)
+                table_insert(linoria_connections, connection)
 
                 Table:UpdateButton()
                 Dropdown:Display()
@@ -1806,7 +1829,7 @@ do
             Dropdown:Display()
         end
 
-        DropdownOuter.InputBegan:Connect(function(Input)
+        connection = DropdownOuter.InputBegan:Connect(function(Input)
             if Input.UserInputType == Enum.UserInputType.MouseButton1 and not Library:MouseIsOverOpenedFrame() then
                 if ListOuter.Visible then
                     Dropdown:CloseDropdown()
@@ -1815,8 +1838,9 @@ do
                 end
             end
         end)
+        table_insert(linoria_connections, connection)
 
-        InputService.InputBegan:Connect(function(Input)
+        connection = InputService.InputBegan:Connect(function(Input)
             if Input.UserInputType == Enum.UserInputType.MouseButton1 then
                 local AbsPos, AbsSize = ListOuter.AbsolutePosition, ListOuter.AbsoluteSize
 
@@ -1827,6 +1851,7 @@ do
                 end
             end
         end)
+        table_insert(linoria_connections, connection)
 
         Dropdown:SetValues()
         Dropdown:Display()
@@ -2540,11 +2565,12 @@ function Library:CreateWindow(WindowTitle)
                     end
                 end
 
-                Button.InputBegan:Connect(function(Input)
+                connection = Button.InputBegan:Connect(function(Input)
                     if Input.UserInputType == Enum.UserInputType.MouseButton1 and not Library:MouseIsOverOpenedFrame() then
                         Tab:Show()
                     end
                 end)
+                table_insert(linoria_connections, connection)
 
                 Tab.Container = Container
                 Tabbox.Tabs[Name] = Tab
@@ -2574,11 +2600,12 @@ function Library:CreateWindow(WindowTitle)
             return Tab:AddTabbox({ Name = Name, Side = 2 })
         end
 
-        TabButton.InputBegan:Connect(function(Input)
+        connection = TabButton.InputBegan:Connect(function(Input)
             if Input.UserInputType == Enum.UserInputType.MouseButton1 then
                 Tab:ShowTab()
             end
         end)
+        table_insert(linoria_connections, connection)
 
         if #TabContainer:GetChildren() == 1 then
             Tab:ShowTab()
@@ -2597,7 +2624,7 @@ function Library:CreateWindow(WindowTitle)
         Parent = ScreenGui
     })
 
-    InputService.InputBegan:Connect(function(Input, Processed)
+    connection = InputService.InputBegan:Connect(function(Input, Processed)
         if Input.KeyCode == Enum.KeyCode.RightAlt and not Processed then
             Outer.Visible = not Outer.Visible
             ModalElement.Modal = Outer.Visible
@@ -2607,7 +2634,7 @@ function Library:CreateWindow(WindowTitle)
             Cursor.Filled = true
 
             while Outer.Visible do
-                local mPos = Workspace.CurrentCamera:WorldToViewportPoint(Mouse.Hit.p)
+                local mPos = Workspace.CurrentCamera:WorldToViewportPoint(Mouse.Hit.Position)
 
                 Cursor.Color = Library.AccentColor
                 Cursor.PointA = vector2_new(mPos.X, mPos.Y)
@@ -2619,9 +2646,10 @@ function Library:CreateWindow(WindowTitle)
                 task_wait()
             end
 
-            Cursor:Remove()
+            Cursor:Destroy()
         end
     end)
+    table_insert(linoria_connections, connection)
 
     Window.Holder = Outer
 
