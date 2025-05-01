@@ -1,4 +1,4 @@
----@diagnostic disable: undefined-global
+
 local game = game
 local Workspace = workspace
 local type = type
@@ -935,18 +935,6 @@ local BaseGroupbox = {}
 
 do
     local Funcs = {}
-
-    function Funcs:Disconnect()
-        for _, connection in linoria_connections do
-            if connection["Disconnect"] then
-                connection["Disconnect"](connection)
-            end
-            if connection["Disable"] then
-                connection["Disable"](connection)
-            end
-        end
-        linoria_connections = nil
-    end
 
     function Funcs:AddBlank(Size)
         local Groupbox = self
@@ -2035,6 +2023,18 @@ function Library:SetWatermark(Text)
     Library:SetWatermarkVisibility(true)
 
     Library.WatermarkText.Text = Text
+end
+
+function Library:Disconnect()
+    for _, connection in linoria_connections do
+        if connection["Disconnect"] then
+            connection["Disconnect"](connection)
+        end
+        if connection["Disable"] then
+            connection["Disable"](connection)
+        end
+    end
+    linoria_connections = nil
 end
 
 function Library:Notify(Text, Time)
