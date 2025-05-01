@@ -38,7 +38,7 @@ local linoria_connections = {}
 
 local InputService = game:GetService("UserInputService")
 local TextService = game:GetService("TextService")
-local CoreGui = gethui and gethui() or cloneref(game:GetService("CoreGui"))
+local CoreGui = gethui and gethui() or cloneref and cloneref(game:GetService("CoreGui")) or game:GetService("CoreGui")
 local CollectionService = game:GetService("CollectionService")
 local LocalPlayer = game:GetService("Players").LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
