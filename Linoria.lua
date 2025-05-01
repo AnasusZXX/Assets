@@ -2030,9 +2030,6 @@ function Library:Disconnect()
         if connection["Disconnect"] then
             connection["Disconnect"](connection)
         end
-        if connection["Disable"] then
-            connection["Disable"](connection)
-        end
     end
     linoria_connections = nil
 end
