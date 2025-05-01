@@ -730,7 +730,9 @@ do
                 KeyPicker.Mode = Mode
 
                 Label.TextColor3 = Library.AccentColor
-                Library.RegistryMap[Label].Properties.TextColor3 = "AccentColor"
+                if Library.RegistryMap[Label] then
+                    Library.RegistryMap[Label].Properties.TextColor3 = "AccentColor"
+                end
 
                 ModeSelectOuter.Visible = false
             end
@@ -739,7 +741,9 @@ do
                 KeyPicker.Mode = nil
 
                 Label.TextColor3 = Library.FontColor
-                Library.RegistryMap[Label].Properties.TextColor3 = "FontColor"
+                if Library.RegistryMap[Label] then 
+                    Library.RegistryMap[Label].Properties.TextColor3 = "FontColor"    
+                end
             end
 
             connection = Label.InputBegan:Connect(function(Input)
@@ -769,8 +773,8 @@ do
             ContainerLabel.TextColor3 = State and Library.AccentColor or Library.FontColor
 
             if Library.RegistryMap[ContainerLabel] then
-		Library.RegistryMap[ContainerLabel].Properties.TextColor3 = State and "AccentColor" or "FontColor"
-	    end
+		        Library.RegistryMap[ContainerLabel].Properties.TextColor3 = State and "AccentColor" or "FontColor"
+	        end
 
             local YSize = 0
 
@@ -1269,9 +1273,9 @@ do
             ToggleInner.BorderColor3 = Toggle.Value and Library.AccentColorDark or Library.OutlineColor
 
             if Library.RegistryMap[ToggleInner] then
-		Library.RegistryMap[ToggleInner].Properties.BackgroundColor3 = Toggle.Value and "AccentColor" or "MainColor"
+		        Library.RegistryMap[ToggleInner].Properties.BackgroundColor3 = Toggle.Value and "AccentColor" or "MainColor"
             	Library.RegistryMap[ToggleInner].Properties.BorderColor3 = Toggle.Value and "AccentColorDark" or "OutlineColor"
-	    end
+	        end
         end
 
         function Toggle:OnChanged(Func)
@@ -1732,7 +1736,9 @@ do
                     end
 
                     ButtonLabel.TextColor3 = Selected and Library.AccentColor or Library.FontColor
-                    Library.RegistryMap[ButtonLabel].Properties.TextColor3 = Selected and "AccentColor" or "FontColor"
+                    if Library.RegistryMap[ButtonLabel] then
+                        Library.RegistryMap[ButtonLabel].Properties.TextColor3 = Selected and "AccentColor" or "FontColor"
+                    end
                 end
 
                 connection = ButtonLabel.InputBegan:Connect(function(Input)
@@ -2528,7 +2534,9 @@ function Library:CreateWindow(WindowTitle)
                     Block.Visible = true
 
                     Button.BackgroundColor3 = Library.BackgroundColor
-                    Library.RegistryMap[Button].Properties.BackgroundColor3 = "BackgroundColor"
+                    if Library.RegistryMap[Button]then 
+                        Library.RegistryMap[Button].Properties.BackgroundColor3 = "BackgroundColor"
+                    end
                 end
 
                 function Tab:Hide()
@@ -2536,7 +2544,9 @@ function Library:CreateWindow(WindowTitle)
                     Block.Visible = false
 
                     Button.BackgroundColor3 = Library.MainColor
-                    Library.RegistryMap[Button].Properties.BackgroundColor3 = "MainColor"
+                    if Library.RegistryMap[Button] then 
+                        Library.RegistryMap[Button].Properties.BackgroundColor3 = "MainColor"
+                    end
                 end
 
                 function Tab:Resize()
