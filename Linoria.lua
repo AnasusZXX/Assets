@@ -4,6 +4,7 @@ local Workspace = workspace
 local type = type
 local tick = tick
 local pcall = pcall
+local getgenv = getgenv
 local setmetatable = setmetatable
 local gethui = gethui
 local cloneref = cloneref
