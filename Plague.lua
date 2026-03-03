@@ -1,4 +1,4 @@
----@diagnostic disable: undefined-global
+
 local PCR_1 = Instance.new("ScreenGui")
 local TweenService = game:GetService('TweenService');
 local uis = game:GetService("UserInputService")
