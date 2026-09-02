@@ -37,29 +37,15 @@ local vector2_new = Vector2.new
 
 local InputService = game:GetService("UserInputService")
 local TextService = game:GetService("TextService")
-local CoreGui = gethui and gethui() or cloneref and cloneref(game:GetService("CoreGui")) or game:GetService("CoreGui")
-local CollectionService = game:GetService("CollectionService")
+local CoreGui = gethui and gethui() or game:GetService("CoreGui")
 local LocalPlayer = game:GetService("Players").LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 
 local ScreenGui = instance_new("ScreenGui")
 
-local GenerateString = function ()
-	local length = math_random(10, 20)
-	local array = {}
-
-	for i = 1, length do
-		array[i] = string_char(math_random(32, 126))
-	end
-
-	return table_concat(array)
-end
-
-ScreenGui.Name = GenerateString()
+ScreenGui.Name = "Linoria"
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
 ScreenGui.Parent = CoreGui
-
-CollectionService:AddTag(ScreenGui, "Linoria")
 
 local Toggles = {}
 local Options = {}
